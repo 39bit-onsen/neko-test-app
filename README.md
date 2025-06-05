@@ -1,46 +1,212 @@
-# Getting Started with Create React App
+# 🐱 猫日記 (Neko Diary)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+愛猫の健康管理と思い出の記録ができる、猫の飼い主のための総合記録アプリです。
 
-## Available Scripts
+## 📱 アプリ概要
 
-In the project directory, you can run:
+猫日記は、猫の飼い主が愛猫の日常を包括的に記録・管理できるWebアプリケーションです。健康状態の変化を追跡し、行動パターンを把握し、大切な思い出を保存することで、より良い猫との生活をサポートします。
 
-### `npm start`
+### 🎯 主要な特徴
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **4つの専門記録システム**: 食事・健康・行動・自由記録に特化した入力フォーム
+- **オフライン対応**: IndexedDBによるローカルストレージで、インターネット接続がなくても利用可能
+- **高度な検索・分析**: カテゴリーフィルター、キーワード検索、時系列表示
+- **獣医師連携**: 健康記録を整理してかかりつけ医との情報共有をサポート
+- **レスポンシブデザイン**: スマートフォン、タブレット、PCどの端末でも快適に利用可能
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🚀 クイックスタート
 
-### `npm test`
+### 必要な環境
+- Node.js (v16以上)
+- npm または yarn
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### インストールと起動
 
-### `npm run build`
+```bash
+# リポジトリのクローン
+git clone https://github.com/39bit-onsen/neko-test-app.git
+cd neko-test-app
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# 依存関係のインストール
+npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# 開発サーバーの起動
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+ブラウザで `http://localhost:3000` にアクセスしてアプリを開始できます。
 
-### `npm run eject`
+## 📊 機能詳細
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 🍽️ 食事記録
+愛猫の食事習慣を詳細に記録し、健康管理に役立てます。
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**記録項目:**
+- 食事時間と食事の種類（ドライフード、ウェットフード、おやつ等）
+- 給餌量（グラム、ミリリットル、個数単位で記録）
+- 食欲レベル（5段階評価：とても良い〜食べない）
+- 完食状況
+- 特記事項（好みの変化、食べ方の特徴など）
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+**活用例:**
+- 食欲不振の早期発見
+- 獣医師への正確な食事報告
+- 最適な給餌量の把握
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 💊 健康記録
+体調の変化を見逃さず、愛猫の健康状態を継続的に監視できます。
 
-## Learn More
+**記録項目:**
+- 体重・体温の計測値
+- 症状の選択（元気がない、食欲不振、嘔吐、下痢等12種類＋カスタム入力）
+- 投薬記録（薬名、用量、時間の詳細管理）
+- 動物病院受診の記録
+- 獣医師の診断・処置内容
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+**活用例:**
+- 体重変化のグラフ化による肥満・痩せすぎの管理
+- 症状の頻度分析
+- 病院での正確な症状報告
+- 薬の投与スケジュール管理
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 🎾 行動記録
+愛猫の日常的な行動パターンを記録し、性格や健康状態を把握します。
+
+**記録項目:**
+- 活動レベル（5段階：とても活発〜元気がない）
+- 睡眠時間・遊び時間の記録
+- トイレ使用回数
+- 特別な行動（12種類の一般的行動＋カスタム入力）
+- よくいる場所の記録
+
+**活用例:**
+- 老化による活動量変化の把握
+- ストレス状態の早期発見
+- 環境変化への適応状況の確認
+- 行動の問題の特定と対策
+
+### 📝 自由記録
+日記形式で愛猫との思い出や特別な出来事を記録できます。
+
+**記録項目:**
+- タイトルと詳細内容
+- タグ機能（12種類の定型タグ＋カスタムタグ）
+- 感情や気づきの自由記述
+
+**活用例:**
+- 成長記録の保存
+- 面白いエピソードの記録
+- 初めての体験の記録
+- 季節ごとの変化の観察
+
+## 🔍 検索・分析機能
+
+### 高度な検索システム
+- **カテゴリーフィルター**: 記録タイプ別の表示切り替え
+- **キーワード検索**: 症状、行動、タグ、内容を横断検索
+- **日付範囲指定**: 特定期間の記録を抽出
+- **並び替え**: 日付順・カテゴリー順の切り替え
+
+### データ表示モード
+- **タイムライン表示**: 時系列での記録確認
+- **カテゴリー別表示**: 同じタイプの記録をまとめて確認
+- **統計情報**: 記録件数や傾向の概要表示
+
+## 🛠️ 技術仕様
+
+### フロントエンド技術スタック
+- **React 19**: 最新のReactフレームワーク
+- **TypeScript 4.9**: 型安全な開発環境
+- **CSS Grid & Flexbox**: レスポンシブレイアウト
+- **IndexedDB**: ブラウザ内データベース
+
+### データ管理
+- **オフラインファースト設計**: ネットワーク接続に依存しない
+- **自動データ永続化**: 入力内容の自動保存
+- **型安全なデータ構造**: TypeScriptによる堅牢なデータ管理
+
+### アーキテクチャ
+```
+src/
+├── components/           # Reactコンポーネント
+│   ├── CatDiary.tsx     # メインコンテナ
+│   ├── EntryForm/       # 入力フォーム群
+│   └── EntryList/       # 表示・検索UI
+├── types/               # TypeScript型定義
+├── utils/               # ユーティリティ関数
+└── storage.ts           # IndexedDB管理
+```
+
+## 📱 対応環境
+
+### ブラウザサポート
+- **デスクトップ**: Chrome, Firefox, Safari, Edge (最新版)
+- **モバイル**: iOS Safari, Android Chrome
+- **PWA対応**: 将来的にホーム画面への追加機能を予定
+
+### レスポンシブデザイン
+- **スマートフォン**: 320px〜768px
+- **タブレット**: 768px〜1024px  
+- **デスクトップ**: 1024px以上
+
+## 🚧 開発者向け情報
+
+### 開発コマンド
+```bash
+# 開発サーバー起動
+npm start
+
+# プロダクションビルド
+npm run build
+
+# テスト実行
+npm test
+
+# テストカバレッジ
+npm test -- --coverage
+```
+
+### コードスタイル
+- **ESLint**: React/TypeScript推奨設定
+- **Prettier**: コード整形（設定により）
+- **型安全**: strict TypeScript設定
+
+### 開発のポイント
+- コンポーネントは機能別に分離
+- 型定義は`src/types/index.ts`に集約
+- スタイルはコンポーネント単位で管理
+- IndexedDBの操作は`StorageManager`クラス経由
+
+## 🔮 今後の拡張計画
+
+### Phase 2（予定）
+- **写真・動画添付機能**: 記録への画像添付
+- **統計・グラフ機能**: 体重変化や活動パターンの可視化
+- **リマインダー機能**: 薬の投与や健康診断の通知
+
+### Phase 3（予定）
+- **複数猫管理**: 多頭飼い対応
+- **データエクスポート**: PDF/CSV出力機能
+- **クラウド同期**: デバイス間でのデータ共有
+
+### Phase 4（予定）
+- **AIアシスト**: 健康状態の異常検知
+- **獣医師連携**: 診療記録の直接共有
+- **コミュニティ機能**: 他の飼い主との情報交換
+
+## 📄 ライセンス
+
+このプロジェクトはMITライセンスの下で公開されています。
+
+## 🤝 コントリビューション
+
+プルリクエストやIssueを歓迎します。大きな変更を提案する場合は、まずIssueで議論してください。
+
+## 📞 サポート
+
+- **GitHub Issues**: バグ報告や機能要望
+- **プロジェクトWiki**: 詳細なドキュメント（準備中）
+
+---
+
+**愛猫との素晴らしい時間を、猫日記と一緒に記録しましょう！** 🐾
