@@ -1,0 +1,266 @@
+.entry-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+}
+
+.entry-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  border-color: #ff6b6b;
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.entry-type-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.entry-icon {
+  font-size: 16px;
+}
+
+.entry-type-label {
+  font-size: 13px;
+}
+
+.entry-mood {
+  font-size: 24px;
+}
+
+.entry-date-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.entry-date {
+  font-weight: 600;
+  color: #333;
+  font-size: 15px;
+}
+
+.entry-time {
+  color: #666;
+  font-size: 13px;
+}
+
+.entry-preview {
+  margin-bottom: 15px;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.preview-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+  min-width: 60px;
+}
+
+.preview-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.more-indicator {
+  font-size: 12px;
+  color: #999;
+  margin-left: 5px;
+}
+
+/* Food Preview Styles */
+.appetite-indicator,
+.activity-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.vet-visit-badge {
+  background: #f44336;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Free Entry Styles */
+.entry-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+
+.entry-content-preview {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin: 0 0 10px 0;
+}
+
+.tags-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.tag-preview {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.more-tags {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Notes Section */
+.entry-notes {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.entry-notes p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Media Indicator */
+.entry-media-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #666;
+  margin-top: 10px;
+}
+
+/* Health-specific styles */
+.health-preview .preview-item {
+  padding: 4px 0;
+}
+
+.health-preview .preview-value {
+  font-weight: 600;
+}
+
+/* Behavior-specific styles */
+.behavior-preview .activity-indicator {
+  background: #e8f5e8;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+/* Food-specific styles */
+.food-preview .appetite-indicator {
+  background: #fff3e0;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .entry-card {
+    padding: 15px;
+    margin-bottom: 12px;
+  }
+  
+  .entry-header {
+    margin-bottom: 12px;
+  }
+  
+  .entry-mood {
+    font-size: 20px;
+  }
+  
+  .entry-date-time {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .preview-item {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  .preview-label {
+    min-width: auto;
+    margin-bottom: 3px;
+  }
+  
+  .tags-preview {
+    gap: 4px;
+  }
+  
+  .tag-preview {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .entry-card {
+    padding: 12px;
+  }
+  
+  .entry-type-badge {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .entry-icon {
+    font-size: 14px;
+  }
+  
+  .entry-type-label {
+    font-size: 11px;
+  }
+}
