@@ -2,78 +2,108 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Commands
 
-This is "猫日記" (Cat Diary) - a React TypeScript application for cat owners to track their pets' daily activities, health, behavior, and memories. The app uses IndexedDB for offline-first data storage and features a comprehensive categorized entry system.
-
-## Development Commands
-
-- `npm start` - Start development server (http://localhost:3000)
-- `npm run build` - Build for production 
+### Development
+- `npm start` - Start development server on localhost:3000
+- `npm run build` - Create production build
 - `npm test` - Run tests in interactive watch mode
-- `npm run test -- --coverage` - Run tests with coverage report
-- `npm run test -- --watchAll=false` - Run tests once (CI mode)
 
-## Application Architecture
+### No Linting/Type Checking
+This project uses Create React App defaults without additional linting or type checking scripts configured.
 
-### Core Data Flow
-The application follows a unidirectional data flow pattern:
-1. **Storage Layer**: IndexedDB via `src/utils/storage.ts` (StorageManager class)
-2. **State Management**: React hooks in main `CatDiary` component
-3. **Entry Types**: Four specialized form types (food, health, behavior, free)
-4. **Display Layer**: Categorized entry cards with search/filter capabilities
+## Architecture Overview
 
-### Key Data Structures
-- **DiaryEntry**: Main entry interface with type-specific data union
-- **EntryType**: 'food' | 'health' | 'behavior' | 'free'
-- **Storage**: IndexedDB with two object stores (entries, profiles)
+### Core Concept
+"猫日記" (Cat Diary) is an offline-first React TypeScript application for tracking cat health, behavior, meals, and memories using IndexedDB for local storage.
 
-### Component Hierarchy
+### Data Architecture
 ```
-App
-└── CatDiary (main container)
-    ├── NewEntryForm (entry creation)
-    │   ├── EntryTypeSelector
-    │   └── [FoodForm|HealthForm|BehaviorForm|FreeForm]
-    └── EntryList (display & filtering)
-        └── EntryCard (individual entry display)
+IndexedDB (CatDiaryDB) ↔ StorageManager ↔ React Components
 ```
 
-### Storage Implementation
-- **Database**: CatDiaryDB (IndexedDB)
-- **Stores**: entries (diary entries), profiles (cat profiles)
-- **Offline-first**: All data persisted locally
-- **Data Types**: Automatic date serialization/deserialization
+**Database Schema:**
+- `entries` object store: All diary entries with date/type indexes
+- `profiles` object store: Cat profile information
 
-### Entry Form System
-Each entry type has specialized validation and UI:
-- **Food**: Time, type, amount, appetite level, completion status
-- **Health**: Weight, temperature, symptoms (multi-select), medications, vet visits
-- **Behavior**: Activity level, sleep/play time, special behaviors, locations
-- **Free**: Title, content, tags (flexible diary format)
+**Key Data Types:**
+- `DiaryEntry`: Main entry with discriminated union for type-specific data
+- `EntryType`: 'food' | 'health' | 'behavior' | 'free'
+- Each type has specific data interfaces (FoodData, HealthData, etc.)
 
-### Search & Filtering
-- **Type filtering**: By entry category
-- **Text search**: Across entry content, symptoms, behaviors, tags
-- **Sorting**: By date or category
-- **Grouping**: Date-based or type-based display modes
+### Component Structure
+- `CatDiary`: Main container managing all state and operations
+- `NewEntryForm/EditEntryForm`: Comprehensive forms with auto-save and media upload
+- `EntryCard`: Display component with media preview
+- Specialized forms: `FoodForm`, `HealthForm`, `BehaviorForm`, `FreeForm`
 
-## Development Notes
+### Advanced Features
+- **Draft System**: Auto-save every 2 seconds + manual draft management (max 10 drafts)
+- **Media Upload**: Image/video with compression, thumbnail generation, drag-and-drop
+- **Theme Context**: Dark/light mode with localStorage persistence
+- **Search/Filter**: Multi-field search across content, symptoms, behaviors, tags
+
+## Storage Patterns
+
+### StorageManager Usage
+```typescript
+await storageManager.saveEntry(entry);    // Create
+await storageManager.updateEntry(entry);  // Update
+await storageManager.deleteEntry(id);     // Delete
+await storageManager.getEntries();        // Read all (auto-sorted)
+```
+
+### Date Handling
+- Automatic Date ↔ ISO string conversion in storage
+- Always use `new Date()` for timestamps
+- Entry dates stored as Date objects in memory
+
+### Media Management
+- Use `createMediaAttachment()` for file processing
+- Files compressed automatically (images >1MB, videos for thumbnails)
+- Always call `revokeMediaUrl()` for cleanup
+- Supported: JPEG, PNG, WebP, GIF / MP4, WebM, MOV, AVI
+
+## Development Patterns
 
 ### Adding New Entry Types
-1. Update `EntryType` union in `src/types/index.ts`
-2. Create new data interface extending `BaseEntryData`
-3. Add form component in `src/components/EntryForm/`
-4. Update `NewEntryForm` switch statement and validation
-5. Update `EntryCard` preview rendering
+1. Update `EntryType` union in `types/index.ts`
+2. Create data interface extending `BaseEntryData`
+3. Add form component following existing pattern
+4. Update validation in `NewEntryForm`
+5. Update display logic in `EntryCard`
 
-### Storage Schema Changes
+### Form Validation
+Each entry type requires specific fields:
+- Food: `foodType` + `appetite`
+- Health: `weight` OR `temperature` OR `symptoms`
+- Behavior: `activityLevel`
+- Free: `title` + `content`
+
+### Error Handling
+- Storage operations wrapped in try/catch with user feedback
+- Media processing has fallback for compression failures
+- Form validation shows real-time error messages
+
+### Schema Migrations
 - Increment `DB_VERSION` in `storage.ts`
-- Add migration logic in `onupgradeneeded` handler
-- Test with existing data to ensure compatibility
+- Add migration logic in `onupgradeneeded` event handler
+- Test compatibility with existing data
 
-### Styling Architecture
-- Component-specific CSS files co-located with components
-- Global styles in `App.css` and `index.css` 
-- Responsive design with mobile-first approach
-- CSS Grid and Flexbox for layouts
+## Component Patterns
+
+### State Management
+- Local React state for UI interactions
+- IndexedDB via StorageManager for persistence
+- ThemeContext for global theme state
+- Draft storage uses localStorage
+
+### CSS Organization
+- Component-scoped CSS files co-located with components
+- CSS custom properties for theming
+- Mobile-first responsive design
+
+### Testing
+- React Testing Library + Jest configured
+- Basic smoke test exists, expand as needed
+- Test files use `.test.tsx` extension
