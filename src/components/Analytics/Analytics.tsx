@@ -14,6 +14,7 @@ import {
 import { Line, Bar } from 'react-chartjs-2';
 import { DiaryEntry } from '../../types';
 import { BasicStats } from '../../utils/analytics';
+import Dashboard from '../Dashboard/Dashboard';
 import './Analytics.css';
 
 ChartJS.register(
@@ -33,10 +34,12 @@ interface AnalyticsProps {
 }
 
 type TimeRange = '1week' | '1month' | '3months' | 'all';
+type AnalyticsMode = 'dashboard' | 'charts';
 
 const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('1month');
   const [filteredEntries, setFilteredEntries] = useState<DiaryEntry[]>([]);
+  const [mode, setMode] = useState<AnalyticsMode>('dashboard');
 
   useEffect(() => {
     let filtered = entries;
@@ -93,93 +96,119 @@ const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
     <div className="analytics">
       <div className="analytics-header">
         <h2>📊 統計・分析</h2>
-        <div className="time-range-selector">
-          <label>期間:</label>
-          <select 
-            value={timeRange} 
-            onChange={(e) => setTimeRange(e.target.value as TimeRange)}
-          >
-            <option value="1week">1週間</option>
-            <option value="1month">1ヶ月</option>
-            <option value="3months">3ヶ月</option>
-            <option value="all">すべて</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="analytics-summary">
-        <div className="summary-card">
-          <h3>記録サマリー</h3>
-          <div className="summary-grid">
-            <div className="summary-item">
-              <span className="label">総記録数:</span>
-              <span className="value">{basicStats.totalEntries}件</span>
-            </div>
-            <div className="summary-item">
-              <span className="label">週平均:</span>
-              <span className="value">{basicStats.weeklyAverage}件/週</span>
-            </div>
-            <div className="summary-item">
-              <span className="label">期間:</span>
-              <span className="value">{getTimeRangeLabel(timeRange)}</span>
-            </div>
+        
+        <div className="analytics-controls">
+          <div className="mode-selector">
+            <button 
+              className={`mode-btn ${mode === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setMode('dashboard')}
+            >
+              🏥 ダッシュボード
+            </button>
+            <button 
+              className={`mode-btn ${mode === 'charts' ? 'active' : ''}`}
+              onClick={() => setMode('charts')}
+            >
+              📈 詳細グラフ
+            </button>
           </div>
           
-          <div className="type-distribution">
-            <h4>記録タイプ別</h4>
-            <div className="type-grid">
-              <div className="type-item">
-                <span>🍽️ 食事: {basicStats.typeDistribution.food || 0}件</span>
+          {mode === 'charts' && (
+            <div className="time-range-selector">
+              <label>期間:</label>
+              <select 
+                value={timeRange} 
+                onChange={(e) => setTimeRange(e.target.value as TimeRange)}
+              >
+                <option value="1week">1週間</option>
+                <option value="1month">1ヶ月</option>
+                <option value="3months">3ヶ月</option>
+                <option value="all">すべて</option>
+              </select>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {mode === 'dashboard' ? (
+        <Dashboard entries={entries} />
+      ) : (
+        <>
+          <div className="analytics-summary">
+            <div className="summary-card">
+              <h3>記録サマリー</h3>
+              <div className="summary-grid">
+                <div className="summary-item">
+                  <span className="label">総記録数:</span>
+                  <span className="value">{basicStats.totalEntries}件</span>
+                </div>
+                <div className="summary-item">
+                  <span className="label">週平均:</span>
+                  <span className="value">{basicStats.weeklyAverage}件/週</span>
+                </div>
+                <div className="summary-item">
+                  <span className="label">期間:</span>
+                  <span className="value">{getTimeRangeLabel(timeRange)}</span>
+                </div>
               </div>
-              <div className="type-item">
-                <span>💊 健康: {basicStats.typeDistribution.health || 0}件</span>
-              </div>
-              <div className="type-item">
-                <span>🎾 行動: {basicStats.typeDistribution.behavior || 0}件</span>
-              </div>
-              <div className="type-item">
-                <span>📝 自由: {basicStats.typeDistribution.free || 0}件</span>
+              
+              <div className="type-distribution">
+                <h4>記録タイプ別</h4>
+                <div className="type-grid">
+                  <div className="type-item">
+                    <span>🍽️ 食事: {basicStats.typeDistribution.food || 0}件</span>
+                  </div>
+                  <div className="type-item">
+                    <span>💊 健康: {basicStats.typeDistribution.health || 0}件</span>
+                  </div>
+                  <div className="type-item">
+                    <span>🎾 行動: {basicStats.typeDistribution.behavior || 0}件</span>
+                  </div>
+                  <div className="type-item">
+                    <span>📝 自由: {basicStats.typeDistribution.free || 0}件</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="charts-grid">
-        {weightTrend.labels.length > 0 && (
-          <div className="chart-container">
-            <h3>📏 体重変化</h3>
-            <Line data={weightTrend} options={chartOptions} />
+          <div className="charts-grid">
+            {weightTrend.labels.length > 0 && (
+              <div className="chart-container">
+                <h3>📏 体重変化</h3>
+                <Line data={weightTrend} options={chartOptions} />
+              </div>
+            )}
+
+            {appetiteTrend.labels.length > 0 && (
+              <div className="chart-container">
+                <h3>🍽️ 食欲レベル推移</h3>
+                <Line data={appetiteTrend} options={chartOptions} />
+              </div>
+            )}
+
+            {activityTrend.labels.length > 0 && (
+              <div className="chart-container">
+                <h3>🎾 活動レベル推移</h3>
+                <Line data={activityTrend} options={chartOptions} />
+              </div>
+            )}
+
+            {symptomFrequency.labels.length > 0 && (
+              <div className="chart-container">
+                <h3>🏥 症状出現頻度</h3>
+                <Bar data={symptomFrequency} options={chartOptions} />
+              </div>
+            )}
           </div>
-        )}
 
-        {appetiteTrend.labels.length > 0 && (
-          <div className="chart-container">
-            <h3>🍽️ 食欲レベル推移</h3>
-            <Line data={appetiteTrend} options={chartOptions} />
-          </div>
-        )}
-
-        {activityTrend.labels.length > 0 && (
-          <div className="chart-container">
-            <h3>🎾 活動レベル推移</h3>
-            <Line data={activityTrend} options={chartOptions} />
-          </div>
-        )}
-
-        {symptomFrequency.labels.length > 0 && (
-          <div className="chart-container">
-            <h3>🏥 症状出現頻度</h3>
-            <Bar data={symptomFrequency} options={chartOptions} />
-          </div>
-        )}
-      </div>
-
-      {filteredEntries.length === 0 && (
-        <div className="no-data">
-          <p>選択した期間にデータがありません。</p>
-          <p>記録を追加して統計を確認しましょう！</p>
-        </div>
+          {filteredEntries.length === 0 && (
+            <div className="no-data">
+              <p>選択した期間にデータがありません。</p>
+              <p>記録を追加して統計を確認しましょう！</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
