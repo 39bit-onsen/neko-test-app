@@ -15,6 +15,7 @@ import { Line, Bar } from 'react-chartjs-2';
 import { DiaryEntry } from '../../types';
 import { BasicStats } from '../../utils/analytics';
 import Dashboard from '../Dashboard/Dashboard';
+import NutritionAnalysis from '../Nutrition/NutritionAnalysis';
 import './Analytics.css';
 
 ChartJS.register(
@@ -34,7 +35,7 @@ interface AnalyticsProps {
 }
 
 type TimeRange = '1week' | '1month' | '3months' | 'all';
-type AnalyticsMode = 'dashboard' | 'charts';
+type AnalyticsMode = 'dashboard' | 'nutrition' | 'charts';
 
 const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('1month');
@@ -106,6 +107,12 @@ const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
               🏥 ダッシュボード
             </button>
             <button 
+              className={`mode-btn ${mode === 'nutrition' ? 'active' : ''}`}
+              onClick={() => setMode('nutrition')}
+            >
+              🍽️ 食事分析
+            </button>
+            <button 
               className={`mode-btn ${mode === 'charts' ? 'active' : ''}`}
               onClick={() => setMode('charts')}
             >
@@ -132,6 +139,8 @@ const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
 
       {mode === 'dashboard' ? (
         <Dashboard entries={entries} />
+      ) : mode === 'nutrition' ? (
+        <NutritionAnalysis entries={entries} />
       ) : (
         <>
           <div className="analytics-summary">
