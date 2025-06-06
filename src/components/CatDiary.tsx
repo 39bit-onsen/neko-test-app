@@ -4,9 +4,12 @@ import { storageManager } from '../utils/storage';
 import NewEntryForm from './EntryForm/NewEntryForm';
 import EditEntryForm from './EntryForm/EditEntryForm';
 import EntryList from './EntryList/EntryList';
+import Analytics from './Analytics/Analytics';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog';
 import ThemeToggle from './ThemeToggle/ThemeToggle';
 import './CatDiary.css';
+
+type ViewMode = 'entries' | 'analytics';
 
 const CatDiary: React.FC = () => {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
@@ -14,6 +17,7 @@ const CatDiary: React.FC = () => {
   const [editingEntry, setEditingEntry] = useState<DiaryEntry | null>(null);
   const [deletingEntry, setDeletingEntry] = useState<DiaryEntry | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<ViewMode>('entries');
 
   useEffect(() => {
     initializeStorage();
@@ -79,12 +83,30 @@ const CatDiary: React.FC = () => {
           <span className="total-entries">{entries.length}件の記録</span>
           <ThemeToggle />
         </div>
-        <button 
-          className="add-entry-btn"
-          onClick={() => setIsAddingEntry(true)}
-        >
-          新しい記録を作成
-        </button>
+        
+        <div className="view-mode-selector">
+          <button 
+            className={`mode-btn ${viewMode === 'entries' ? 'active' : ''}`}
+            onClick={() => setViewMode('entries')}
+          >
+            📝 記録一覧
+          </button>
+          <button 
+            className={`mode-btn ${viewMode === 'analytics' ? 'active' : ''}`}
+            onClick={() => setViewMode('analytics')}
+          >
+            📊 統計・分析
+          </button>
+        </div>
+        
+        {viewMode === 'entries' && (
+          <button 
+            className="add-entry-btn"
+            onClick={() => setIsAddingEntry(true)}
+          >
+            新しい記録を作成
+          </button>
+        )}
       </header>
 
       {isAddingEntry && (
@@ -102,12 +124,16 @@ const CatDiary: React.FC = () => {
         />
       )}
 
-      <EntryList
-        entries={entries}
-        onEntryClick={handleEntryClick}
-        onEntryEdit={setEditingEntry}
-        onEntryDelete={setDeletingEntry}
-      />
+      {viewMode === 'entries' ? (
+        <EntryList
+          entries={entries}
+          onEntryClick={handleEntryClick}
+          onEntryEdit={setEditingEntry}
+          onEntryDelete={setDeletingEntry}
+        />
+      ) : (
+        <Analytics entries={entries} />
+      )}
 
       <ConfirmDialog
         isOpen={!!deletingEntry}
