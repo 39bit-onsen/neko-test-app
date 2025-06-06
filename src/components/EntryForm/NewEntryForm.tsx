@@ -1,30 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { DiaryEntry, EntryType, EntryData, Mood, FoodData, HealthData, BehaviorData, FreeData } from '../../types';
+import React, { useState, useEffect, useRef } from 'react';
+import { DiaryEntry, EntryType, EntryData, Mood, FoodData, HealthData, BehaviorData, FreeData, MediaAttachment } from '../../types';
 import { storageManager } from '../../utils/storage';
+import { draftStorage, DraftData } from '../../utils/draftStorage';
 import EntryTypeSelector from './EntryTypeSelector';
 import FoodForm from './FoodForm';
 import HealthForm from './HealthForm';
 import BehaviorForm from './BehaviorForm';
 import FreeForm from './FreeForm';
+import DraftManager from '../DraftManager/DraftManager';
+import MediaUpload from '../MediaUpload/MediaUpload';
 import './EntryForm.css';
 
 interface NewEntryFormProps {
   onSave: (entry: DiaryEntry) => void;
   onCancel: () => void;
+  initialDraft?: DraftData;
 }
 
-const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel }) => {
-  const [entryType, setEntryType] = useState<EntryType>('free');
-  const [mood, setMood] = useState<Mood>('😸');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [entryData, setEntryData] = useState<Partial<EntryData>>({});
+const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDraft }) => {
+  const [entryType, setEntryType] = useState<EntryType>(initialDraft?.type || 'free');
+  const [mood, setMood] = useState<Mood>((initialDraft?.mood as Mood) || '😸');
+  const [date, setDate] = useState(initialDraft?.date || new Date().toISOString().split('T')[0]);
+  const [entryData, setEntryData] = useState<Partial<EntryData>>(initialDraft?.data || {});
+  const [media, setMedia] = useState<MediaAttachment[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDraftManagerOpen, setIsDraftManagerOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const autoSaveTimer = useRef<NodeJS.Timeout | null>(null);
+  const formId = useRef(`form_${Date.now()}`);
 
   const moods: Mood[] = ['😸', '😻', '😿', '😾', '🙀', '😺', '😹', '😼'];
 
   useEffect(() => {
-    setEntryData({});
-  }, [entryType]);
+    if (!initialDraft) {
+      setEntryData({});
+    }
+  }, [entryType, initialDraft]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    if (autoSaveTimer.current) {
+      clearTimeout(autoSaveTimer.current);
+    }
+
+    autoSaveTimer.current = setTimeout(() => {
+      if (Object.keys(entryData).length > 0) {
+        draftStorage.autoSave(formId.current, entryType, entryData, mood, date);
+      }
+    }, 2000);
+
+    return () => {
+      if (autoSaveTimer.current) {
+        clearTimeout(autoSaveTimer.current);
+      }
+    };
+  }, [entryType, entryData, mood, date]);
+
+  // Load auto-save on mount
+  useEffect(() => {
+    if (!initialDraft) {
+      const autoSaved = draftStorage.loadAutoSave(formId.current);
+      if (autoSaved) {
+        setEntryType(autoSaved.type);
+        setEntryData(autoSaved.data);
+        setMood(autoSaved.mood as Mood);
+        setDate(autoSaved.date);
+      }
+    }
+  }, [initialDraft]);
 
   const handleTypeChange = (type: EntryType) => {
     setEntryType(type);
@@ -32,6 +76,20 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel }) => {
 
   const handleDataChange = (data: Partial<EntryData>) => {
     setEntryData(data);
+    setError(null);
+  };
+
+  const handleSaveDraft = () => {
+    const draftId = draftStorage.saveDraft(entryType, entryData, mood, date);
+    alert('下書きを保存しました');
+  };
+
+  const handleLoadDraft = (draft: DraftData) => {
+    setEntryType(draft.type);
+    setEntryData(draft.data);
+    setMood(draft.mood as Mood);
+    setDate(draft.date);
+    setIsDraftManagerOpen(false);
   };
 
   const validateEntry = (): boolean => {
@@ -55,11 +113,12 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel }) => {
 
   const handleSubmit = async () => {
     if (!validateEntry()) {
-      alert('必須項目を入力してください');
+      setError('必須項目を入力してください');
       return;
     }
 
     setIsSubmitting(true);
+    setError(null);
 
     try {
       const entry: DiaryEntry = {
@@ -67,20 +126,29 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel }) => {
         type: entryType,
         date: new Date(date),
         data: entryData as EntryData,
-        media: [],
+        media: media,
         mood,
         createdAt: new Date(),
         updatedAt: new Date()
       };
 
       await storageManager.saveEntry(entry);
+      
+      // Clear auto-save after successful save
+      draftStorage.clearAutoSave(formId.current);
+      
       onSave(entry);
     } catch (error) {
       console.error('Error saving entry:', error);
-      alert('保存に失敗しました。もう一度お試しください。');
+      setError('保存に失敗しました。もう一度お試しください。');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCancel = () => {
+    // Keep auto-save when cancelling
+    onCancel();
   };
 
   const renderFormContent = () => {
@@ -134,61 +202,97 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel }) => {
   };
 
   return (
-    <div className="entry-form">
-      <div className="form-header">
-        <h2>{getFormTitle()}</h2>
-        <div className="header-controls">
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            max={new Date().toISOString().split('T')[0]}
-          />
-        </div>
-      </div>
-
-      <EntryTypeSelector
-        selectedType={entryType}
-        onTypeChange={handleTypeChange}
-      />
-
-      {renderFormContent()}
-
-      <div className="form-group">
-        <label>今日の猫の気分</label>
-        <div className="mood-selector">
-          <div className="mood-options">
-            {moods.map(moodOption => (
-              <button
-                key={moodOption}
-                type="button"
-                className={`mood-btn ${mood === moodOption ? 'selected' : ''}`}
-                onClick={() => setMood(moodOption)}
-              >
-                {moodOption}
-              </button>
-            ))}
+    <>
+      <div className="entry-form">
+        <div className="form-header">
+          <h2>{getFormTitle()}</h2>
+          <div className="header-controls">
+            <button
+              type="button"
+              className="draft-btn"
+              onClick={() => setIsDraftManagerOpen(true)}
+              disabled={!draftStorage.hasDrafts()}
+            >
+              下書き
+            </button>
+            <button
+              type="button"
+              className="save-draft-btn"
+              onClick={handleSaveDraft}
+              disabled={Object.keys(entryData).length === 0}
+            >
+              保存
+            </button>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+            />
           </div>
         </div>
+
+        <EntryTypeSelector
+          selectedType={entryType}
+          onTypeChange={handleTypeChange}
+        />
+
+        {renderFormContent()}
+
+        <div className="form-group">
+          <label>今日の猫の気分</label>
+          <div className="mood-selector">
+            <div className="mood-options">
+              {moods.map(moodOption => (
+                <button
+                  key={moodOption}
+                  type="button"
+                  className={`mood-btn ${mood === moodOption ? 'selected' : ''}`}
+                  onClick={() => setMood(moodOption)}
+                >
+                  {moodOption}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <MediaUpload
+          media={media}
+          onChange={setMedia}
+          maxFiles={5}
+        />
+
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
+          </div>
+        )}
+
+        <div className="form-actions">
+          <button
+            className="save-btn"
+            onClick={handleSubmit}
+            disabled={isSubmitting || !validateEntry()}
+          >
+            {isSubmitting ? '保存中...' : '保存'}
+          </button>
+          <button
+            className="cancel-btn"
+            onClick={handleCancel}
+            disabled={isSubmitting}
+          >
+            キャンセル
+          </button>
+        </div>
       </div>
 
-      <div className="form-actions">
-        <button
-          className="save-btn"
-          onClick={handleSubmit}
-          disabled={isSubmitting || !validateEntry()}
-        >
-          {isSubmitting ? '保存中...' : '保存'}
-        </button>
-        <button
-          className="cancel-btn"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
-          キャンセル
-        </button>
-      </div>
-    </div>
+      <DraftManager
+        isOpen={isDraftManagerOpen}
+        onClose={() => setIsDraftManagerOpen(false)}
+        onLoadDraft={handleLoadDraft}
+      />
+    </>
   );
 };
 

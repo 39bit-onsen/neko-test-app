@@ -6,9 +6,11 @@ import './EntryList.css';
 interface EntryListProps {
   entries: DiaryEntry[];
   onEntryClick?: (entry: DiaryEntry) => void;
+  onEntryEdit?: (entry: DiaryEntry) => void;
+  onEntryDelete?: (entry: DiaryEntry) => void;
 }
 
-const EntryList: React.FC<EntryListProps> = ({ entries, onEntryClick }) => {
+const EntryList: React.FC<EntryListProps> = ({ entries, onEntryClick, onEntryEdit, onEntryDelete }) => {
   const [filterType, setFilterType] = useState<EntryType | 'all'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'type'>('date');
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,6 +168,8 @@ const EntryList: React.FC<EntryListProps> = ({ entries, onEntryClick }) => {
                     key={entry.id}
                     entry={entry}
                     onClick={() => onEntryClick?.(entry)}
+                    onEdit={() => onEntryEdit?.(entry)}
+                    onDelete={() => onEntryDelete?.(entry)}
                   />
                 ))}
               </div>
@@ -188,6 +192,8 @@ const EntryList: React.FC<EntryListProps> = ({ entries, onEntryClick }) => {
                     key={entry.id}
                     entry={entry}
                     onClick={() => onEntryClick?.(entry)}
+                    onEdit={() => onEntryEdit?.(entry)}
+                    onDelete={() => onEntryDelete?.(entry)}
                   />
                 ))}
               </div>
@@ -204,6 +210,8 @@ const EntryList: React.FC<EntryListProps> = ({ entries, onEntryClick }) => {
             key={entry.id}
             entry={entry}
             onClick={() => onEntryClick?.(entry)}
+            onEdit={() => onEntryEdit?.(entry)}
+            onDelete={() => onEntryDelete?.(entry)}
           />
         ))}
       </div>

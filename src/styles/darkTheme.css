@@ -1,0 +1,355 @@
+/* Dark Theme Variables */
+:root {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --bg-tertiary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-tertiary: #888888;
+  --border-color: #333333;
+  --accent-color: #ff6b6b;
+  --accent-hover: #ff5252;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Theme Styles */
+body.dark-theme {
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d, #1f1f1f);
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* App Container */
+body.dark-theme .App {
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d, #1f1f1f);
+}
+
+/* Cat Diary Container */
+body.dark-theme .cat-diary {
+  color: var(--text-primary);
+}
+
+/* Header */
+body.dark-theme .diary-header {
+  border-bottom-color: var(--border-color);
+}
+
+body.dark-theme .diary-header h1 {
+  color: var(--accent-color);
+}
+
+body.dark-theme .total-entries {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+/* Buttons */
+body.dark-theme .add-entry-btn {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+}
+
+body.dark-theme .add-entry-btn:hover {
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+/* Entry Forms */
+body.dark-theme .entry-form {
+  background: var(--bg-secondary);
+  box-shadow: 0 5px 20px var(--shadow-color);
+}
+
+body.dark-theme .form-header {
+  border-bottom-color: var(--border-color);
+}
+
+body.dark-theme .form-header h2 {
+  color: var(--text-primary);
+}
+
+body.dark-theme .form-group label {
+  color: var(--text-secondary);
+}
+
+body.dark-theme .form-group input,
+body.dark-theme .form-group select,
+body.dark-theme .form-group textarea {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .form-group input:focus,
+body.dark-theme .form-group select:focus,
+body.dark-theme .form-group textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+/* Entry Type Selector */
+body.dark-theme .type-option {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .type-option:hover {
+  border-color: var(--accent-color);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+}
+
+body.dark-theme .type-option.selected {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 240, 240, 0.1));
+}
+
+body.dark-theme .type-description {
+  color: var(--text-tertiary);
+}
+
+/* Form Buttons */
+body.dark-theme .appetite-btn,
+body.dark-theme .activity-btn,
+body.dark-theme .symptom-btn,
+body.dark-theme .behavior-btn,
+body.dark-theme .location-btn,
+body.dark-theme .tag-btn,
+body.dark-theme .food-type-btn,
+body.dark-theme .mood-btn {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .appetite-btn:hover,
+body.dark-theme .activity-btn:hover,
+body.dark-theme .symptom-btn:hover,
+body.dark-theme .behavior-btn:hover,
+body.dark-theme .location-btn:hover,
+body.dark-theme .tag-btn:hover,
+body.dark-theme .food-type-btn:hover,
+body.dark-theme .mood-btn:hover {
+  border-color: var(--accent-color);
+}
+
+body.dark-theme .appetite-btn.selected,
+body.dark-theme .activity-btn.selected,
+body.dark-theme .symptom-btn.selected,
+body.dark-theme .behavior-btn.selected,
+body.dark-theme .location-btn.selected,
+body.dark-theme .tag-btn.selected,
+body.dark-theme .food-type-btn.selected,
+body.dark-theme .mood-btn.selected {
+  background: var(--accent-color);
+  color: white;
+}
+
+/* Entry Cards */
+body.dark-theme .entry-card {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  box-shadow: 0 3px 10px var(--shadow-color);
+}
+
+body.dark-theme .entry-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-color: var(--accent-color);
+}
+
+body.dark-theme .entry-date-time {
+  border-bottom-color: var(--border-color);
+}
+
+body.dark-theme .entry-date {
+  color: var(--text-primary);
+}
+
+body.dark-theme .entry-time {
+  color: var(--text-tertiary);
+}
+
+body.dark-theme .preview-label {
+  color: var(--text-tertiary);
+}
+
+body.dark-theme .preview-value {
+  color: var(--text-primary);
+}
+
+body.dark-theme .entry-title {
+  color: var(--text-primary);
+}
+
+body.dark-theme .entry-content-preview {
+  color: var(--text-secondary);
+}
+
+body.dark-theme .entry-notes {
+  background: var(--bg-tertiary);
+}
+
+body.dark-theme .entry-notes p {
+  color: var(--text-secondary);
+}
+
+/* Entry List Controls */
+body.dark-theme .list-controls {
+  background: var(--bg-secondary);
+  box-shadow: 0 3px 10px var(--shadow-color);
+}
+
+body.dark-theme .search-input {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .search-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+body.dark-theme .filter-select,
+body.dark-theme .sort-select {
+  background: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+body.dark-theme .filter-group label {
+  color: var(--text-secondary);
+}
+
+body.dark-theme .entries-count {
+  color: var(--text-tertiary);
+  border-top-color: var(--border-color);
+}
+
+/* Date/Type Group Headers */
+body.dark-theme .date-group,
+body.dark-theme .type-group {
+  background: var(--bg-secondary);
+  box-shadow: 0 3px 10px var(--shadow-color);
+}
+
+body.dark-theme .date-group-header,
+body.dark-theme .type-group-header {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+}
+
+/* No Entries */
+body.dark-theme .no-entries {
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  box-shadow: 0 3px 10px var(--shadow-color);
+}
+
+/* Confirm Dialog */
+body.dark-theme .confirm-dialog {
+  background: var(--bg-secondary);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .confirm-dialog-title {
+  color: var(--text-primary);
+}
+
+body.dark-theme .confirm-dialog-message {
+  color: var(--text-secondary);
+}
+
+body.dark-theme .cancel-btn {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .cancel-btn:hover {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+/* Tag Previews */
+body.dark-theme .tag-preview {
+  background: rgba(33, 150, 243, 0.2);
+  color: #64b5f6;
+}
+
+/* Selected Items */
+body.dark-theme .selected-symptoms,
+body.dark-theme .selected-behaviors,
+body.dark-theme .selected-locations,
+body.dark-theme .selected-tags {
+  background: var(--bg-tertiary);
+}
+
+body.dark-theme .symptom-tag,
+body.dark-theme .behavior-tag,
+body.dark-theme .location-tag,
+body.dark-theme .tag-item {
+  background: var(--accent-color);
+}
+
+/* Medication List */
+body.dark-theme .medication-list {
+  background: var(--bg-tertiary);
+}
+
+body.dark-theme .medication-item {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Custom Input Buttons */
+body.dark-theme .custom-symptom-input button,
+body.dark-theme .custom-behavior-input button,
+body.dark-theme .custom-location-input button,
+body.dark-theme .custom-tag-input button {
+  background: var(--success-color);
+}
+
+body.dark-theme .custom-symptom-input button:hover,
+body.dark-theme .custom-behavior-input button:hover,
+body.dark-theme .custom-location-input button:hover,
+body.dark-theme .custom-tag-input button:hover {
+  background: #45a049;
+}
+
+/* Error Messages */
+body.dark-theme .error-message {
+  background: rgba(244, 67, 54, 0.1);
+  border-color: var(--error-color);
+}
+
+body.dark-theme .error-message p {
+  color: #ff6b6b;
+}
+
+/* Loading Spinner */
+body.dark-theme .loading-spinner {
+  border-color: var(--bg-tertiary);
+  border-top-color: var(--accent-color);
+}
+
+body.dark-theme .loading-container p {
+  color: var(--text-tertiary);
+}
+
+/* Scrollbar for dark theme */
+body.dark-theme ::-webkit-scrollbar {
+  width: 8px;
+}
+
+body.dark-theme ::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-color);
+}

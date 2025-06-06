@@ -1,13 +1,16 @@
 import React from 'react';
 import { DiaryEntry, FoodData, HealthData, BehaviorData, FreeData } from '../../types';
+import MediaPreview from './MediaPreview';
 import './EntryCard.css';
 
 interface EntryCardProps {
   entry: DiaryEntry;
   onClick?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-const EntryCard: React.FC<EntryCardProps> = ({ entry, onClick }) => {
+const EntryCard: React.FC<EntryCardProps> = ({ entry, onClick, onEdit, onDelete }) => {
   const getEntryTypeInfo = () => {
     switch (entry.type) {
       case 'food':
@@ -198,14 +201,55 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, onClick }) => {
 
   const typeInfo = getEntryTypeInfo();
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (e.target instanceof Element && e.target.closest('.entry-actions')) {
+      return;
+    }
+    onClick?.();
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onEdit?.();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.();
+  };
+
   return (
-    <div className="entry-card" onClick={onClick}>
+    <div className="entry-card" onClick={handleCardClick}>
       <div className="entry-header">
         <div className="entry-type-badge" style={{ backgroundColor: typeInfo.color }}>
           <span className="entry-icon">{typeInfo.icon}</span>
           <span className="entry-type-label">{typeInfo.label}</span>
         </div>
-        <div className="entry-mood">{entry.mood}</div>
+        <div className="entry-header-right">
+          <div className="entry-mood">{entry.mood}</div>
+          {(onEdit || onDelete) && (
+            <div className="entry-actions">
+              {onEdit && (
+                <button
+                  className="entry-action-btn edit-btn"
+                  onClick={handleEditClick}
+                  title="編集"
+                >
+                  ✏️
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  className="entry-action-btn delete-btn"
+                  onClick={handleDeleteClick}
+                  title="削除"
+                >
+                  🗑️
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="entry-date-time">
@@ -224,11 +268,7 @@ const EntryCard: React.FC<EntryCardProps> = ({ entry, onClick }) => {
         </div>
       )}
 
-      {entry.media && entry.media.length > 0 && (
-        <div className="entry-media-indicator">
-          📷 {entry.media.length}枚の写真
-        </div>
-      )}
+      <MediaPreview media={entry.media} />
     </div>
   );
 };

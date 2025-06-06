@@ -22,6 +22,12 @@
   margin-bottom: 15px;
 }
 
+.entry-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .entry-type-badge {
   display: flex;
   align-items: center;
@@ -43,6 +49,37 @@
 
 .entry-mood {
   font-size: 24px;
+}
+
+/* Entry Actions */
+.entry-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.entry-action-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.entry-action-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.edit-btn:hover {
+  background: rgba(76, 175, 80, 0.1);
+}
+
+.delete-btn:hover {
+  background: rgba(244, 67, 54, 0.1);
 }
 
 .entry-date-time {

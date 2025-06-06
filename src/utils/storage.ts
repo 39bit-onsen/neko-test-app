@@ -107,6 +107,26 @@ class StorageManager {
     });
   }
 
+  async updateEntry(entry: DiaryEntry): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+
+    const entryToUpdate = {
+      ...entry,
+      date: entry.date.toISOString(),
+      createdAt: entry.createdAt.toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([ENTRIES_STORE], 'readwrite');
+      const store = transaction.objectStore(ENTRIES_STORE);
+      const request = store.put(entryToUpdate);
+
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve();
+    });
+  }
+
   async deleteEntry(id: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
 

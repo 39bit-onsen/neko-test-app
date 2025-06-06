@@ -52,6 +52,9 @@ export interface MediaAttachment {
   file?: File;
   caption?: string;
   size: number;
+  fileName: string;
+  mimeType: string;
+  thumbnail?: string;
 }
 
 export interface DiaryEntry {
