@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DiaryEntry, Reminder, Alert } from '../types';
 import { storageManager } from '../utils/storage';
 import { useMultiCat } from '../contexts/MultiCatContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import NewEntryForm from './EntryForm/NewEntryForm';
 import EditEntryForm from './EntryForm/EditEntryForm';
 import EntryList from './EntryList/EntryList';
@@ -18,6 +19,7 @@ import ReportGenerator from './Reports/ReportGenerator';
 import Dashboard from './Dashboard/Dashboard';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog';
 import ThemeToggle from './ThemeToggle/ThemeToggle';
+import LanguageToggle from './LanguageToggle/LanguageToggle';
 import CatSelector from './CatSelector/CatSelector';
 import './CatDiary.css';
 
@@ -38,6 +40,7 @@ type ViewMode =
 
 const CatDiary: React.FC = () => {
   const { activeCat, activeCatId, isLoading: catsLoading } = useMultiCat();
+  const { t } = useLanguage();
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [isAddingEntry, setIsAddingEntry] = useState(false);
   const [editingEntry, setEditingEntry] = useState<DiaryEntry | null>(null);
@@ -109,7 +112,7 @@ const CatDiary: React.FC = () => {
       setDeletingEntry(null);
     } catch (error) {
       console.error('Failed to delete entry:', error);
-      alert('削除に失敗しました。もう一度お試しください。');
+      alert(t('errors.deleteFailed'));
     }
   };
 
@@ -122,41 +125,41 @@ const CatDiary: React.FC = () => {
   // ナビゲーションメニューの定義
   const navigationMenus = [
     {
-      category: '基本機能',
+      category: t('navigation.categories.basic'),
       items: [
-        { id: 'dashboard' as ViewMode, label: '🏠 ダッシュボード', description: '健康状態の総合表示' },
-        { id: 'entries' as ViewMode, label: '📝 記録一覧', description: '日記エントリーの管理' },
-        { id: 'analytics' as ViewMode, label: '📊 基本分析', description: '統計・グラフ表示' },
+        { id: 'dashboard' as ViewMode, label: `🏠 ${t('navigation.dashboard')}`, description: t('navigation.dashboardDesc') },
+        { id: 'entries' as ViewMode, label: `📝 ${t('navigation.entries')}`, description: t('navigation.entriesDesc') },
+        { id: 'analytics' as ViewMode, label: `📊 ${t('navigation.analytics')}`, description: t('navigation.analyticsDesc') },
       ]
     },
     {
-      category: '多頭飼い管理',
+      category: t('navigation.categories.multiCat'),
       items: [
-        { id: 'cat-profile' as ViewMode, label: '🐱 猫プロファイル', description: '猫の基本情報管理' },
-        { id: 'cat-comparison' as ViewMode, label: '⚖️ 猫間比較', description: '複数猫の比較分析' },
+        { id: 'cat-profile' as ViewMode, label: `🐱 ${t('navigation.catProfile')}`, description: t('navigation.catProfileDesc') },
+        { id: 'cat-comparison' as ViewMode, label: `⚖️ ${t('navigation.catComparison')}`, description: t('navigation.catComparisonDesc') },
       ]
     },
     {
-      category: '高度分析',
+      category: t('navigation.categories.advanced'),
       items: [
-        { id: 'advanced-analytics' as ViewMode, label: '🔮 AI予測分析', description: 'AI による健康予測' },
-        { id: 'behavior-analysis' as ViewMode, label: '🎾 行動分析', description: '行動パターン詳細分析' },
+        { id: 'advanced-analytics' as ViewMode, label: `🔮 ${t('navigation.aiAnalytics')}`, description: t('navigation.aiAnalyticsDesc') },
+        { id: 'behavior-analysis' as ViewMode, label: `🎾 ${t('navigation.behaviorAnalysis')}`, description: t('navigation.behaviorAnalysisDesc') },
       ]
     },
     {
-      category: 'ソーシャル・共有',
+      category: t('navigation.categories.social'),
       items: [
-        { id: 'social-hub' as ViewMode, label: '🤝 ソーシャルハブ', description: '統合ソーシャル機能' },
-        { id: 'vet-sharing' as ViewMode, label: '🏥 獣医師連携', description: '獣医師との記録共有' },
-        { id: 'family-manager' as ViewMode, label: '👥 家族管理', description: '家族メンバー招待・管理' },
+        { id: 'social-hub' as ViewMode, label: `🤝 ${t('navigation.socialHub')}`, description: t('navigation.socialHubDesc') },
+        { id: 'vet-sharing' as ViewMode, label: `🏥 ${t('navigation.vetSharing')}`, description: t('navigation.vetSharingDesc') },
+        { id: 'family-manager' as ViewMode, label: `👥 ${t('navigation.familyManager')}`, description: t('navigation.familyManagerDesc') },
       ]
     },
     {
-      category: 'ツール・設定',
+      category: t('navigation.categories.tools'),
       items: [
-        { id: 'reminders' as ViewMode, label: '⏰ リマインダー', description: '健康管理リマインダー' },
-        { id: 'notifications' as ViewMode, label: '🔔 通知センター', description: 'PWA通知・アラート管理' },
-        { id: 'reports' as ViewMode, label: '📄 レポート生成', description: 'PDF・CSV出力' },
+        { id: 'reminders' as ViewMode, label: `⏰ ${t('navigation.reminders')}`, description: t('navigation.remindersDesc') },
+        { id: 'notifications' as ViewMode, label: `🔔 ${t('navigation.notifications')}`, description: t('navigation.notificationsDesc') },
+        { id: 'reports' as ViewMode, label: `📄 ${t('navigation.reports')}`, description: t('navigation.reportsDesc') },
       ]
     }
   ];
@@ -166,7 +169,7 @@ const CatDiary: React.FC = () => {
       const item = menu.items.find(item => item.id === viewMode);
       if (item) return item.label;
     }
-    return '🏠 ダッシュボード';
+    return `🏠 ${t('navigation.dashboard')}`;
   };
 
   const renderCurrentView = () => {
@@ -203,8 +206,8 @@ const CatDiary: React.FC = () => {
         return (
           <div className="vet-sharing-container">
             <div className="vet-sharing-header">
-              <h3>🏥 獣医師連携</h3>
-              <p>記録をクリックして獣医師と共有・相談ができます。</p>
+              <h3>🏥 {t('navigation.vetSharing')}</h3>
+              <p>{t('vet.sharingDescription')}</p>
             </div>
             <EntryList
               entries={entries}
@@ -237,8 +240,8 @@ const CatDiary: React.FC = () => {
       case 'reminders':
         return (
           <div className="reminders-wrapper">
-            <h3>⏰ リマインダー管理</h3>
-            <p>リマインダー機能は開発中です。近日中に実装予定です。</p>
+            <h3>⏰ {t('navigation.reminders')}</h3>
+            <p>{t('reminders.developmentMessage')}</p>
           </div>
         );
       
@@ -255,7 +258,7 @@ const CatDiary: React.FC = () => {
       <div className="cat-diary">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>データを読み込み中...</p>
+          <p>{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -265,8 +268,9 @@ const CatDiary: React.FC = () => {
     <div className="cat-diary">
       <header className="diary-header">
         <div className="header-top">
-          <h1>🐱 猫日記 🐱</h1>
+          <h1>🐱 {t('app.title')} 🐱</h1>
           <div className="header-controls">
+            <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>
@@ -284,13 +288,13 @@ const CatDiary: React.FC = () => {
             <div className="current-view">
               <h2>{getCurrentViewTitle()}</h2>
               <div className="view-stats">
-                <span className="total-entries">{entries.length}件の記録</span>
+                <span className="total-entries">{t('entries.totalCount', { count: entries.length })}</span>
                 {viewMode === 'entries' && (
                   <button 
                     className="add-entry-btn"
                     onClick={() => setIsAddingEntry(true)}
                   >
-                    + 新しい記録
+                    + {t('entries.addNew')}
                   </button>
                 )}
               </div>
@@ -321,8 +325,8 @@ const CatDiary: React.FC = () => {
           <div className="no-cat-selected">
             <div className="no-cat-content">
               <span className="no-cat-icon">🐱</span>
-              <h3>猫を選択または登録してください</h3>
-              <p>多頭飼い対応の猫日記で、愛猫の健康と成長を記録しましょう</p>
+              <h3>{t('cats.selectOrRegister')}</h3>
+              <p>{t('cats.multiCatDescription')}</p>
             </div>
           </div>
         )}
@@ -366,10 +370,12 @@ const CatDiary: React.FC = () => {
 
       <ConfirmDialog
         isOpen={!!deletingEntry}
-        title="記録を削除"
-        message={`「${deletingEntry?.type === 'free' ? (deletingEntry.data as any).title : `${deletingEntry?.type}記録`}」を削除しますか？この操作は取り消せません。`}
-        confirmText="削除"
-        cancelText="キャンセル"
+        title={t('entries.deleteTitle')}
+        message={`${t('entries.deleteMessage', { 
+          title: deletingEntry?.type === 'free' ? (deletingEntry.data as any).title : t(`entries.types.${deletingEntry?.type}`) 
+        })}`}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         onConfirm={handleDeleteEntry}
         onCancel={() => setDeletingEntry(null)}
         type="danger"

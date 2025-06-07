@@ -3,6 +3,7 @@ import { DiaryEntry, EntryType, EntryData, Mood, FoodData, HealthData, BehaviorD
 import { storageManager } from '../../utils/storage';
 import { draftStorage, DraftData } from '../../utils/draftStorage';
 import { useMultiCat } from '../../contexts/MultiCatContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import EntryTypeSelector from './EntryTypeSelector';
 import FoodForm from './FoodForm';
 import HealthForm from './HealthForm';
@@ -20,6 +21,7 @@ interface NewEntryFormProps {
 
 const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDraft }) => {
   const { activeCatId, activeCat } = useMultiCat();
+  const { t } = useLanguage();
   const [entryType, setEntryType] = useState<EntryType>(initialDraft?.type || 'free');
   const [mood, setMood] = useState<Mood>((initialDraft?.mood as Mood) || '😸');
   const [date, setDate] = useState(initialDraft?.date || new Date().toISOString().split('T')[0]);
@@ -83,7 +85,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
 
   const handleSaveDraft = () => {
     const draftId = draftStorage.saveDraft(entryType, entryData, mood, date);
-    alert('下書きを保存しました');
+    alert(t('forms.draftSaved'));
   };
 
   const handleLoadDraft = (draft: DraftData) => {
@@ -115,12 +117,12 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
 
   const handleSubmit = async () => {
     if (!activeCatId) {
-      setError('猫を選択してください');
+      setError(t('forms.errors.selectCat'));
       return;
     }
 
     if (!validateEntry()) {
-      setError('必須項目を入力してください');
+      setError(t('forms.errors.requiredFields'));
       return;
     }
 
@@ -148,7 +150,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
       onSave(entry);
     } catch (error) {
       console.error('Error saving entry:', error);
-      setError('保存に失敗しました。もう一度お試しください。');
+      setError(t('forms.errors.saveFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -197,15 +199,15 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
   const getFormTitle = () => {
     switch (entryType) {
       case 'food':
-        return '🍽️ 食事記録';
+        return `🍽️ ${t('forms.titles.food')}`;
       case 'health':
-        return '💊 健康記録';
+        return `💊 ${t('forms.titles.health')}`;
       case 'behavior':
-        return '🎾 行動記録';
+        return `🎾 ${t('forms.titles.behavior')}`;
       case 'free':
-        return '📝 自由記録';
+        return `📝 ${t('forms.titles.free')}`;
       default:
-        return '新しい記録';
+        return t('forms.titles.new');
     }
   };
 
@@ -221,7 +223,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
               onClick={() => setIsDraftManagerOpen(true)}
               disabled={!draftStorage.hasDrafts()}
             >
-              下書き
+              {t('forms.buttons.drafts')}
             </button>
             <button
               type="button"
@@ -229,7 +231,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
               onClick={handleSaveDraft}
               disabled={Object.keys(entryData).length === 0}
             >
-              保存
+              {t('forms.buttons.save')}
             </button>
             <input
               type="date"
@@ -248,7 +250,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
         {renderFormContent()}
 
         <div className="form-group">
-          <label>今日の猫の気分</label>
+          <label>{t('forms.labels.mood')}</label>
           <div className="mood-selector">
             <div className="mood-options">
               {moods.map(moodOption => (
@@ -283,14 +285,14 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
             onClick={handleSubmit}
             disabled={isSubmitting || !validateEntry()}
           >
-            {isSubmitting ? '保存中...' : '保存'}
+            {isSubmitting ? t('forms.buttons.saving') : t('forms.buttons.save')}
           </button>
           <button
             className="cancel-btn"
             onClick={handleCancel}
             disabled={isSubmitting}
           >
-            キャンセル
+            {t('forms.buttons.cancel')}
           </button>
         </div>
       </div>

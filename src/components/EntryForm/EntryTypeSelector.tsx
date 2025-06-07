@@ -1,5 +1,6 @@
 import React from 'react';
 import { EntryType } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 import './EntryTypeSelector.css';
 
 interface EntryTypeSelectorProps {
@@ -7,40 +8,41 @@ interface EntryTypeSelectorProps {
   onTypeChange: (type: EntryType) => void;
 }
 
-const entryTypes = [
-  { 
-    type: 'food' as EntryType, 
-    label: '食事記録', 
-    icon: '🍽️',
-    description: 'フードの種類、量、食べ具合'
-  },
-  { 
-    type: 'health' as EntryType, 
-    label: '健康記録', 
-    icon: '💊',
-    description: '体重、症状、薬、病院'
-  },
-  { 
-    type: 'behavior' as EntryType, 
-    label: '行動記録', 
-    icon: '🎾',
-    description: '活動量、睡眠、遊び、行動'
-  },
-  { 
-    type: 'free' as EntryType, 
-    label: '自由記録', 
-    icon: '📝',
-    description: '日記、思い出、エピソード'
-  }
-];
-
 const EntryTypeSelector: React.FC<EntryTypeSelectorProps> = ({
   selectedType,
   onTypeChange
 }) => {
+  const { t } = useLanguage();
+  
+  const entryTypes = [
+    { 
+      type: 'food' as EntryType, 
+      label: t('forms.entryTypes.food.label'), 
+      icon: '🍽️',
+      description: t('forms.entryTypes.food.description')
+    },
+    { 
+      type: 'health' as EntryType, 
+      label: t('forms.entryTypes.health.label'), 
+      icon: '💊',
+      description: t('forms.entryTypes.health.description')
+    },
+    { 
+      type: 'behavior' as EntryType, 
+      label: t('forms.entryTypes.behavior.label'), 
+      icon: '🎾',
+      description: t('forms.entryTypes.behavior.description')
+    },
+    { 
+      type: 'free' as EntryType, 
+      label: t('forms.entryTypes.free.label'), 
+      icon: '📝',
+      description: t('forms.entryTypes.free.description')
+    }
+  ];
   return (
     <div className="entry-type-selector">
-      <h3>記録の種類を選んでください</h3>
+      <h3>{t('forms.selectEntryType')}</h3>
       <div className="type-options">
         {entryTypes.map(({ type, label, icon, description }) => (
           <button
