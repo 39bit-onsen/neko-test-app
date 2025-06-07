@@ -265,7 +265,12 @@ const CatDiary: React.FC = () => {
         </div>
 
         {/* 猫選択コンポーネント */}
-        <CatSelector />
+        <div className="cat-selector-section">
+          <CatSelector 
+            showStats={true}
+            onManageClick={() => setViewMode('cat-profile')}
+          />
+        </div>
         
         {activeCat ? (
           <div className="main-navigation">

@@ -25,6 +25,14 @@
   gap: 1rem;
 }
 
+.cat-selector-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 8px;
+}
+
 .diary-header > * {
   flex-shrink: 0;
 }

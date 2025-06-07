@@ -5,11 +5,15 @@ import './CatSelector.css';
 interface CatSelectorProps {
   compact?: boolean;
   showManageLink?: boolean;
+  showStats?: boolean;
+  onManageClick?: () => void;
 }
 
 const CatSelector: React.FC<CatSelectorProps> = ({ 
   compact = false, 
-  showManageLink = true 
+  showManageLink = true,
+  showStats = false,
+  onManageClick
 }) => {
   const { 
     cats, 
@@ -46,6 +50,14 @@ const CatSelector: React.FC<CatSelectorProps> = ({
           <span className="cat-icon">🐱</span>
           <span>猫が登録されていません</span>
         </div>
+        {onManageClick && (
+          <button 
+            className="add-first-cat-btn"
+            onClick={onManageClick}
+          >
+            + 最初の猫を登録
+          </button>
+        )}
       </div>
     );
   }
@@ -126,6 +138,9 @@ const CatSelector: React.FC<CatSelectorProps> = ({
                         {calculateAge(cat.birthDate)}
                       </span>
                     )}
+                    {showStats && activeCat?.id === cat.id && (
+                      <span className="cat-status">アクティブ</span>
+                    )}
                   </div>
                 </div>
                 {activeCat?.id === cat.id && (
@@ -137,13 +152,17 @@ const CatSelector: React.FC<CatSelectorProps> = ({
 
           {showManageLink && (
             <div className="dropdown-footer">
-              <a 
-                href="/cats" 
+              <button 
                 className="manage-link"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  if (onManageClick) {
+                    onManageClick();
+                  }
+                }}
               >
                 + 猫の管理
-              </a>
+              </button>
             </div>
           )}
         </div>
