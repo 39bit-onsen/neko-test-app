@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { DiaryEntry, EntryType, EntryData, Mood, FoodData, HealthData, BehaviorData, FreeData, MediaAttachment } from '../../types';
 import { storageManager } from '../../utils/storage';
 import { draftStorage, DraftData } from '../../utils/draftStorage';
+import { useMultiCat } from '../../contexts/MultiCatContext';
 import EntryTypeSelector from './EntryTypeSelector';
 import FoodForm from './FoodForm';
 import HealthForm from './HealthForm';
@@ -18,6 +19,7 @@ interface NewEntryFormProps {
 }
 
 const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDraft }) => {
+  const { activeCatId, activeCat } = useMultiCat();
   const [entryType, setEntryType] = useState<EntryType>(initialDraft?.type || 'free');
   const [mood, setMood] = useState<Mood>((initialDraft?.mood as Mood) || '😸');
   const [date, setDate] = useState(initialDraft?.date || new Date().toISOString().split('T')[0]);
@@ -112,6 +114,11 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
   };
 
   const handleSubmit = async () => {
+    if (!activeCatId) {
+      setError('猫を選択してください');
+      return;
+    }
+
     if (!validateEntry()) {
       setError('必須項目を入力してください');
       return;
@@ -123,6 +130,7 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({ onSave, onCancel, initialDr
     try {
       const entry: DiaryEntry = {
         id: `entry_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        catId: activeCatId || '',
         type: entryType,
         date: new Date(date),
         data: entryData as EntryData,

@@ -111,9 +111,10 @@ export class PWAManager {
 
   // 背景同期のスケジュール
   static async scheduleBackgroundSync(tag: string): Promise<void> {
-    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype && this.swRegistration) {
       try {
-        await this.swRegistration?.sync.register(tag);
+        const registration = this.swRegistration as any;
+        await registration.sync.register(tag);
         console.log(`Background sync scheduled: ${tag}`);
       } catch (error) {
         console.error('Background sync registration failed:', error);
@@ -249,13 +250,14 @@ export class PWAManager {
     orientation: string;
     screen: { width: number; height: number };
   } {
+    const screenInfo = window.screen;
     return {
       userAgent: navigator.userAgent,
       standalone: window.matchMedia('(display-mode: standalone)').matches,
-      orientation: screen.orientation?.type || 'unknown',
+      orientation: screenInfo.orientation?.type || 'unknown',
       screen: {
-        width: screen.width,
-        height: screen.height
+        width: screenInfo.width,
+        height: screenInfo.height
       }
     };
   }

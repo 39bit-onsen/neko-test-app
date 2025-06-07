@@ -1,4 +1,4 @@
-import { StorageManager } from './storage';
+import { storageManager } from './storage';
 import { DiaryEntry, CatProfile } from '../types';
 import { SocialManager } from './socialManager';
 
@@ -39,8 +39,8 @@ export class BackupManager {
     try {
       console.log('Creating backup...');
       
-      const entries = await StorageManager.getEntries();
-      const profiles = await StorageManager.getProfiles();
+      const entries = await storageManager.getEntries();
+      const profiles = await storageManager.getCatProfiles();
       
       let socialData;
       if (options.includeSocialData) {
@@ -155,7 +155,7 @@ export class BackupManager {
   // 増分バックアップの作成
   static async createIncrementalBackup(lastBackupTimestamp: string): Promise<BackupData | null> {
     try {
-      const entries = await StorageManager.getEntries();
+      const entries = await storageManager.getEntries();
       const lastBackupDate = new Date(lastBackupTimestamp);
       
       const changedEntries = entries.filter(entry => 
@@ -167,7 +167,7 @@ export class BackupManager {
         return null;
       }
 
-      const profiles = await StorageManager.getProfiles();
+      const profiles = await storageManager.getCatProfiles();
       
       const backupData: BackupData = {
         version: this.BACKUP_VERSION,
@@ -291,12 +291,12 @@ export class BackupManager {
   private static async restoreData(backupData: BackupData): Promise<void> {
     // エントリの復元
     for (const entry of backupData.entries) {
-      await StorageManager.saveEntry(entry);
+      await storageManager.saveEntry(entry);
     }
 
     // プロファイルの復元
     for (const profile of backupData.profiles) {
-      await StorageManager.saveProfile(profile);
+      await storageManager.saveCatProfile(profile);
     }
 
     // ソーシャルデータの復元

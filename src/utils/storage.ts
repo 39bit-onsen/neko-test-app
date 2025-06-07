@@ -259,3 +259,4 @@ class StorageManager {
 }
 
 export const storageManager = new StorageManager();
+export { StorageManager };

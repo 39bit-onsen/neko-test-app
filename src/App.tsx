@@ -1,12 +1,15 @@
 import React from 'react';
 import CatDiary from './components/CatDiary';
+import { MultiCatProvider } from './contexts/MultiCatContext';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <CatDiary />
-    </div>
+    <MultiCatProvider>
+      <div className="App">
+        <CatDiary />
+      </div>
+    </MultiCatProvider>
   );
 }
 

@@ -37,6 +37,18 @@
   order: 4;
 }
 
+.no-cat-selected {
+  order: 5;
+  text-align: center;
+  padding: 2rem;
+  background: var(--card-bg, #f8f9fa);
+  border: 2px dashed var(--border-color, #dee2e6);
+  border-radius: 12px;
+  margin: 1rem 0;
+  color: var(--text-secondary, #6c757d);
+  font-size: 1.1rem;
+}
+
 .view-mode-selector {
   display: flex;
   background: #f0f0f0;

@@ -73,7 +73,7 @@ export class AIPredictionEngine {
     const symptomPatterns = this.analyzeSymptomPatterns(healthEntries);
     const weightTrend = this.analyzeWeightTrend(healthEntries);
 
-    let riskLevel: 'low' | 'medium' | 'high' | 'critical' = 'low';
+    let riskLevel: 'low' | 'medium' | 'high' = 'low';
     let probability = 0;
     const potentialIssues: string[] = [];
     const recommendations: string[] = [];
@@ -121,9 +121,7 @@ export class AIPredictionEngine {
         (Date.now() - lastVetVisit.date.getTime()) / (1000 * 60 * 60 * 24)
       );
       
-      if (riskLevel === 'critical') {
-        timeToNextVetVisit = Math.max(1, 7 - daysSinceVet);
-      } else if (riskLevel === 'high') {
+      if (riskLevel === 'high') {
         timeToNextVetVisit = Math.max(7, 30 - daysSinceVet);
       } else if (riskLevel === 'medium') {
         timeToNextVetVisit = Math.max(30, 90 - daysSinceVet);
@@ -341,11 +339,11 @@ export class AIPredictionEngine {
     });
 
     // Check for recurring symptoms
-    for (const [symptom, count] of symptomCounts) {
+    Array.from(symptomCounts.entries()).forEach(([symptom, count]) => {
       if (count >= 3) {
         riskFactors.push(`繰り返し症状: ${symptom}`);
       }
-    }
+    });
 
     return riskFactors;
   }
