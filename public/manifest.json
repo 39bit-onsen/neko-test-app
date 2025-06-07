@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "猫日記",
+  "name": "猫日記 - Cat Diary",
+  "description": "愛猫の健康、行動、食事を記録・分析するオフライン対応アプリ",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,70 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait-primary",
+  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "categories": ["lifestyle", "health", "utilities"],
+  "lang": "ja",
+  "scope": "/",
+  "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "logo512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "猫日記のメイン画面"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "新しい記録を追加",
+      "short_name": "新規記録",
+      "description": "新しい猫の記録を素早く追加",
+      "url": "/new-entry",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "統計・分析",
+      "short_name": "分析",
+      "description": "猫の健康状態や行動パターンを分析",
+      "url": "/analytics",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "健康ダッシュボード",
+      "short_name": "健康",
+      "description": "猫の健康状態を一目で確認",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "logo192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }

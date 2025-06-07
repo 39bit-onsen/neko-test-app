@@ -59,6 +59,7 @@ export interface MediaAttachment {
 
 export interface DiaryEntry {
   id: string;
+  catId: string;
   type: EntryType;
   date: Date;
   data: EntryData;
@@ -78,13 +79,60 @@ export interface CatProfile {
   neutered?: boolean;
   weight?: number;
   profilePhoto?: string;
+  microchipId?: string;
+  medicalNotes?: string;
+  emergencyContact?: string;
+  isActive: boolean;
+  color?: string;
+  adoptionDate?: Date;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface MultiCatState {
+  cats: CatProfile[];
+  activeCatId: string | null;
+  settings: {
+    defaultCat?: string;
+    showAllCatsInStats: boolean;
+    enableCatComparison: boolean;
+  };
+}
+
+export type ReminderType = 'food' | 'medication' | 'vet_visit' | 'grooming' | 'weighing' | 'custom';
+export type AlertType = 'health' | 'behavior' | 'weight' | 'appetite' | 'activity';
+export type AlertSeverity = 'info' | 'warning' | 'critical';
+
+export interface Reminder {
+  id: string;
+  type: ReminderType;
+  title: string;
+  description?: string;
+  time: string;
+  frequency: 'once' | 'daily' | 'weekly' | 'monthly';
+  enabled: boolean;
+  lastTriggered?: Date;
+  nextTrigger: Date;
+  createdAt: Date;
+}
+
+export interface Alert {
+  id: string;
+  type: AlertType;
+  severity: AlertSeverity;
+  title: string;
+  message: string;
+  data?: any;
+  isRead: boolean;
+  createdAt: Date;
+  expiresAt?: Date;
 }
 
 export interface AppState {
   currentCat?: CatProfile;
   entries: DiaryEntry[];
+  reminders: Reminder[];
+  alerts: Alert[];
   isLoading: boolean;
   error?: string;
 }

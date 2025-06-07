@@ -16,6 +16,7 @@ import { DiaryEntry } from '../../types';
 import { BasicStats } from '../../utils/analytics';
 import Dashboard from '../Dashboard/Dashboard';
 import NutritionAnalysis from '../Nutrition/NutritionAnalysis';
+import BehaviorAnalysis from '../Behavior/BehaviorAnalysis';
 import './Analytics.css';
 
 ChartJS.register(
@@ -35,7 +36,7 @@ interface AnalyticsProps {
 }
 
 type TimeRange = '1week' | '1month' | '3months' | 'all';
-type AnalyticsMode = 'dashboard' | 'nutrition' | 'charts';
+type AnalyticsMode = 'dashboard' | 'nutrition' | 'behavior' | 'charts';
 
 const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
   const [timeRange, setTimeRange] = useState<TimeRange>('1month');
@@ -113,6 +114,12 @@ const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
               🍽️ 食事分析
             </button>
             <button 
+              className={`mode-btn ${mode === 'behavior' ? 'active' : ''}`}
+              onClick={() => setMode('behavior')}
+            >
+              🎾 行動分析
+            </button>
+            <button 
               className={`mode-btn ${mode === 'charts' ? 'active' : ''}`}
               onClick={() => setMode('charts')}
             >
@@ -141,6 +148,8 @@ const Analytics: React.FC<AnalyticsProps> = ({ entries }) => {
         <Dashboard entries={entries} />
       ) : mode === 'nutrition' ? (
         <NutritionAnalysis entries={entries} />
+      ) : mode === 'behavior' ? (
+        <BehaviorAnalysis entries={entries} />
       ) : (
         <>
           <div className="analytics-summary">
