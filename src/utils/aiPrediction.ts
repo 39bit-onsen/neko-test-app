@@ -35,6 +35,7 @@ export interface BehaviorPrediction {
   stressIndicators: string[];
   socialNeeds: string[];
   environmentalFactors: string[];
+  recommendations: string[];
 }
 
 export interface WeightPrediction {
@@ -43,6 +44,7 @@ export interface WeightPrediction {
   timeToTarget: number; // days
   dietRecommendations: string[];
   riskFactors: string[];
+  recommendations: string[];
 }
 
 export class AIPredictionEngine {
@@ -154,7 +156,8 @@ export class AIPredictionEngine {
         activityForecast: 50,
         stressIndicators: [],
         socialNeeds: ['より多くの行動記録が必要です'],
-        environmentalFactors: []
+        environmentalFactors: [],
+        recommendations: ['より多くの行動記録を追加して、より正確な予測を行いましょう']
       };
     }
 
@@ -174,12 +177,20 @@ export class AIPredictionEngine {
       .map(entry => this.mapActivityToNumber(entry.data.activityLevel))
       .reduce((sum, val) => sum + val, 0) / Math.min(behaviorEntries.length, 7);
 
+    const recommendations = this.generateBehaviorRecommendations(
+      moodTrend,
+      Math.round(recentActivity * 20),
+      stressIndicators,
+      socialPatterns
+    );
+
     return {
       moodTrend,
       activityForecast: Math.round(recentActivity * 20), // Convert to 0-100 scale
       stressIndicators,
       socialNeeds: socialPatterns,
-      environmentalFactors: this.analyzeEnvironmentalFactors(behaviorEntries)
+      environmentalFactors: this.analyzeEnvironmentalFactors(behaviorEntries),
+      recommendations
     };
   }
 
@@ -205,7 +216,8 @@ export class AIPredictionEngine {
         },
         timeToTarget: 0,
         dietRecommendations: ['体重記録を増やして予測精度を向上させましょう'],
-        riskFactors: []
+        riskFactors: [],
+        recommendations: ['体重記録を増やして予測精度を向上させましょう']
       };
     }
 
@@ -235,12 +247,20 @@ export class AIPredictionEngine {
 
     const riskFactors = this.analyzeWeightRiskFactors(healthEntries, foodEntries);
 
+    const recommendations = this.generateWeightRecommendations(
+      averageWeight,
+      targetWeight,
+      weightTrend,
+      riskFactors
+    );
+
     return {
       targetWeight,
       weightTrend,
       timeToTarget,
       dietRecommendations,
-      riskFactors
+      riskFactors,
+      recommendations
     };
   }
 
@@ -541,5 +561,76 @@ export class AIPredictionEngine {
     const standardDeviation = Math.sqrt(variance);
     
     return standardDeviation / mean; // Coefficient of variation
+  }
+
+  private static generateBehaviorRecommendations(
+    moodTrend: 'improving' | 'stable' | 'declining',
+    activityForecast: number,
+    stressIndicators: string[],
+    socialNeeds: string[]
+  ): string[] {
+    const recommendations: string[] = [];
+
+    if (moodTrend === 'declining') {
+      recommendations.push('環境変化やストレス要因を確認してください');
+      recommendations.push('遊び時間を増やして刺激を与えましょう');
+    }
+
+    if (activityForecast < 40) {
+      recommendations.push('運動量を増やすための新しいおもちゃを試してみてください');
+      recommendations.push('インタラクティブな遊びを取り入れましょう');
+    }
+
+    if (stressIndicators.length > 0) {
+      recommendations.push('ストレス要因を特定し、環境を改善してください');
+      recommendations.push('安全で静かな休息場所を提供しましょう');
+    }
+
+    if (socialNeeds.includes('遊び時間を増やしましょう')) {
+      recommendations.push('定期的な遊び時間をスケジュールに組み込んでください');
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push('現在の行動パターンは良好です。継続してください');
+    }
+
+    return recommendations;
+  }
+
+  private static generateWeightRecommendations(
+    currentWeight: number,
+    targetWeight: number,
+    weightTrend: TrendAnalysis,
+    riskFactors: string[]
+  ): string[] {
+    const recommendations: string[] = [];
+
+    if (Math.abs(currentWeight - targetWeight) > 0.2) {
+      if (currentWeight > targetWeight) {
+        recommendations.push('体重管理のため、食事量を調整することを検討してください');
+        recommendations.push('運動量を増やして健康的な体重を維持しましょう');
+      } else {
+        recommendations.push('栄養価の高い食事で健康的な体重増加を目指しましょう');
+        recommendations.push('食事回数を増やすことを検討してください');
+      }
+    }
+
+    if (weightTrend.trend === 'declining' && weightTrend.strength > 50) {
+      recommendations.push('体重減少が続いています。獣医師に相談することをお勧めします');
+    }
+
+    if (riskFactors.includes('急激な体重変化')) {
+      recommendations.push('急激な体重変化が見られます。健康チェックを受けてください');
+    }
+
+    if (riskFactors.includes('食事量の大きなばらつき')) {
+      recommendations.push('食事量を一定に保つよう心がけてください');
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push('体重管理は良好です。現在のケアを継続してください');
+    }
+
+    return recommendations;
   }
 }
