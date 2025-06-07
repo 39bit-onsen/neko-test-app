@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DiaryEntry } from '../types';
+import { DiaryEntry, Reminder, Alert } from '../types';
 import { storageManager } from '../utils/storage';
 import { useMultiCat } from '../contexts/MultiCatContext';
 import NewEntryForm from './EntryForm/NewEntryForm';
@@ -12,6 +12,7 @@ import CatComparison from './CatComparison/CatComparison';
 import CatProfileManager from './CatProfile/CatProfileManager';
 import VetSharingPanel from './Social/VetSharingPanel';
 import FamilyManager from './Social/FamilyManager';
+import NotificationCenter from './PWA/NotificationCenter';
 import ReportGenerator from './Reports/ReportGenerator';
 import Dashboard from './Dashboard/Dashboard';
 import ConfirmDialog from './ConfirmDialog/ConfirmDialog';
@@ -43,6 +44,8 @@ const CatDiary: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
   const [selectedEntry, setSelectedEntry] = useState<DiaryEntry | null>(null);
   const [showVetSharing, setShowVetSharing] = useState(false);
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
 
   useEffect(() => {
     initializeStorage();
@@ -216,10 +219,12 @@ const CatDiary: React.FC = () => {
       
       case 'notifications':
         return (
-          <div className="notifications-wrapper">
-            <h3>🔔 通知センター</h3>
-            <p>通知機能は開発中です。近日中に実装予定です。</p>
-          </div>
+          <NotificationCenter
+            reminders={reminders}
+            alerts={alerts}
+            onUpdateReminders={setReminders}
+            onUpdateAlerts={setAlerts}
+          />
         );
       
       case 'reminders':

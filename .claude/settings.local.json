@@ -12,7 +12,8 @@
       "Bash(npm install:*)",
       "Bash(grep:*)",
       "Bash(ls:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

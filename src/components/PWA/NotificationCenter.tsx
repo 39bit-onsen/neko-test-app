@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { PWAManager, PWAUtils } from '../../utils/pwaManager';
+import { PWAManager } from '../../utils/pwaManager';
+import { ReminderManager } from '../../utils/reminderManager';
+import { Reminder, Alert } from '../../types';
 import './NotificationCenter.css';
 
 interface Notification {
@@ -18,17 +20,42 @@ interface NotificationAction {
   action: () => void;
 }
 
-const NotificationCenter: React.FC = () => {
+interface NotificationCenterProps {
+  reminders?: Reminder[];
+  alerts?: Alert[];
+  onUpdateReminders?: (reminders: Reminder[]) => void;
+  onUpdateAlerts?: (alerts: Alert[]) => void;
+}
+
+const NotificationCenter: React.FC<NotificationCenterProps> = ({
+  reminders = [],
+  alerts = [],
+  onUpdateReminders,
+  onUpdateAlerts
+}) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isPermissionGranted, setIsPermissionGranted] = useState(false);
   const [isOnline, setIsOnline] = useState(PWAManager.isAppOnline());
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
+  const [dueReminders, setDueReminders] = useState<Reminder[]>([]);
 
   useEffect(() => {
     initializeNotifications();
     setupPWAEventListeners();
     loadStoredNotifications();
   }, []);
+
+  useEffect(() => {
+    const checkReminders = () => {
+      const due = ReminderManager.checkDueReminders(reminders);
+      setDueReminders(due);
+    };
+
+    checkReminders();
+    const interval = setInterval(checkReminders, 60000);
+
+    return () => clearInterval(interval);
+  }, [reminders]);
 
   const initializeNotifications = async () => {
     const permission = await PWAManager.requestNotificationPermission();
@@ -175,6 +202,42 @@ const NotificationCenter: React.FC = () => {
     });
   };
 
+  const handleSnoozeReminder = (reminderId: string) => {
+    const reminder = dueReminders.find(r => r.id === reminderId);
+    if (!reminder || !onUpdateReminders) return;
+
+    const snoozeTime = new Date();
+    snoozeTime.setMinutes(snoozeTime.getMinutes() + 15);
+    
+    const updatedReminders = reminders.map(r =>
+      r.id === reminderId ? { ...r, nextTrigger: snoozeTime } : r
+    );
+    
+    onUpdateReminders(updatedReminders);
+    ReminderManager.saveReminders(updatedReminders);
+  };
+
+  const handleCompleteReminder = (reminderId: string) => {
+    const reminder = dueReminders.find(r => r.id === reminderId);
+    if (!reminder || !onUpdateReminders) return;
+
+    const updatedReminder = ReminderManager.updateReminderAfterTrigger(reminder);
+    const updatedReminders = reminders.map(r =>
+      r.id === reminderId ? updatedReminder : r
+    );
+    
+    onUpdateReminders(updatedReminders);
+    ReminderManager.saveReminders(updatedReminders);
+  };
+
+  const handleDismissAlert = (alertId: string) => {
+    if (!onUpdateAlerts) return;
+    
+    const updatedAlerts = ReminderManager.markAlertAsRead(alerts, alertId);
+    onUpdateAlerts(updatedAlerts);
+    ReminderManager.saveAlerts(updatedAlerts);
+  };
+
   const scheduleHealthReminder = () => {
     const reminderTime = new Date();
     reminderTime.setHours(reminderTime.getHours() + 1);
@@ -220,6 +283,26 @@ const NotificationCenter: React.FC = () => {
     return `notification-${type}`;
   };
 
+  const getReminderTypeIcon = (type: string): string => {
+    switch (type) {
+      case 'food': return '🍽️';
+      case 'medication': return '💊';
+      case 'vet_visit': return '🏥';
+      case 'grooming': return '✂️';
+      case 'weighing': return '⚖️';
+      default: return '📝';
+    }
+  };
+
+  const getAlertIcon = (severity: string): string => {
+    switch (severity) {
+      case 'critical': return '🚨';
+      case 'warning': return '⚠️';
+      case 'info': return 'ℹ️';
+      default: return '📢';
+    }
+  };
+
   const formatTimestamp = (date: Date) => {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -235,14 +318,16 @@ const NotificationCenter: React.FC = () => {
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadAlertsCount = ReminderManager.getUnreadAlertsCount(alerts);
+  const totalNotifications = unreadCount + dueReminders.length + unreadAlertsCount;
 
   return (
     <div className="notification-center">
       <div className="notification-header">
         <h2>🔔 通知センター</h2>
         <div className="header-actions">
-          {unreadCount > 0 && (
-            <span className="unread-badge">{unreadCount}</span>
+          {totalNotifications > 0 && (
+            <span className="unread-badge">{totalNotifications}</span>
           )}
           <button
             className="action-btn"
@@ -303,68 +388,150 @@ const NotificationCenter: React.FC = () => {
       </div>
 
       <div className="notifications-list">
-        {notifications.length === 0 ? (
+        {/* リマインダーセクション */}
+        {dueReminders.length > 0 && (
+          <div className="notification-section">
+            <h3>⏰ 期限のリマインダー</h3>
+            {dueReminders.map(reminder => (
+              <div key={`reminder-${reminder.id}`} className="notification-item reminder-item">
+                <div className="notification-icon">
+                  {getReminderTypeIcon(reminder.type)}
+                </div>
+                <div className="notification-content">
+                  <div className="notification-title">{reminder.title}</div>
+                  {reminder.description && (
+                    <div className="notification-message">{reminder.description}</div>
+                  )}
+                  <div className="notification-timestamp">
+                    {reminder.time} - {reminder.frequency === 'daily' ? '毎日' : 
+                     reminder.frequency === 'weekly' ? '毎週' :
+                     reminder.frequency === 'monthly' ? '毎月' : '一回のみ'}
+                  </div>
+                </div>
+                <div className="notification-controls">
+                  <button
+                    className="snooze-btn"
+                    onClick={() => handleSnoozeReminder(reminder.id)}
+                    title="15分後に再通知"
+                  >
+                    ⏰
+                  </button>
+                  <button
+                    className="complete-btn"
+                    onClick={() => handleCompleteReminder(reminder.id)}
+                    title="完了"
+                  >
+                    ✓
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* アラートセクション */}
+        {unreadAlertsCount > 0 && (
+          <div className="notification-section">
+            <h3>🚨 アラート</h3>
+            {alerts
+              .filter(alert => !alert.isRead)
+              .slice(0, 5)
+              .map(alert => (
+                <div key={`alert-${alert.id}`} className={`notification-item alert-item ${alert.severity}`}>
+                  <div className="notification-icon">
+                    {getAlertIcon(alert.severity)}
+                  </div>
+                  <div className="notification-content">
+                    <div className="notification-title">{alert.title}</div>
+                    <div className="notification-message">{alert.message}</div>
+                    <div className="notification-timestamp">
+                      {alert.createdAt.toLocaleTimeString()}
+                    </div>
+                  </div>
+                  <div className="notification-controls">
+                    <button
+                      className="dismiss-btn"
+                      onClick={() => handleDismissAlert(alert.id)}
+                      title="既読にする"
+                    >
+                      ✓
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </div>
+        )}
+
+        {/* PWA通知セクション */}
+        {notifications.length === 0 && dueReminders.length === 0 && unreadAlertsCount === 0 ? (
           <div className="no-notifications">
             <span className="no-notifications-icon">📭</span>
             <h4>通知はありません</h4>
             <p>新しい通知が届くとここに表示されます。</p>
           </div>
         ) : (
-          notifications.map((notification) => (
-            <div
-              key={notification.id}
-              className={`notification-item ${getNotificationTypeClass(notification.type)} ${
-                !notification.read ? 'unread' : ''
-              }`}
-              onClick={() => markAsRead(notification.id)}
-            >
-              <div className="notification-icon">
-                {getNotificationIcon(notification.type)}
-              </div>
-              
-              <div className="notification-content">
-                <div className="notification-title">
-                  {notification.title}
-                </div>
-                <div className="notification-message">
-                  {notification.message}
-                </div>
-                <div className="notification-timestamp">
-                  {formatTimestamp(notification.timestamp)}
-                </div>
-                
-                {notification.actions && notification.actions.length > 0 && (
-                  <div className="notification-actions">
-                    {notification.actions.map((action) => (
+          <>
+            {notifications.length > 0 && (
+              <div className="notification-section">
+                <h3>📱 システム通知</h3>
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`notification-item ${getNotificationTypeClass(notification.type)} ${
+                      !notification.read ? 'unread' : ''
+                    }`}
+                    onClick={() => markAsRead(notification.id)}
+                  >
+                    <div className="notification-icon">
+                      {getNotificationIcon(notification.type)}
+                    </div>
+                    
+                    <div className="notification-content">
+                      <div className="notification-title">
+                        {notification.title}
+                      </div>
+                      <div className="notification-message">
+                        {notification.message}
+                      </div>
+                      <div className="notification-timestamp">
+                        {formatTimestamp(notification.timestamp)}
+                      </div>
+                      
+                      {notification.actions && notification.actions.length > 0 && (
+                        <div className="notification-actions">
+                          {notification.actions.map((action) => (
+                            <button
+                              key={action.id}
+                              className="notification-action-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                action.action();
+                              }}
+                            >
+                              {action.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="notification-controls">
                       <button
-                        key={action.id}
-                        className="notification-action-btn"
+                        className="delete-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          action.action();
+                          deleteNotification(notification.id);
                         }}
+                        title="削除"
                       >
-                        {action.label}
+                        ✕
                       </button>
-                    ))}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-              
-              <div className="notification-controls">
-                <button
-                  className="delete-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteNotification(notification.id);
-                  }}
-                  title="削除"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))
+            )}
+          </>
         )}
       </div>
     </div>
