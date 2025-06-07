@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DiaryEntry } from '../../types';
 import { HealthScoreCalculator, HealthScore, HealthAlert } from '../../utils/healthScore';
 import { BasicStats } from '../../utils/analytics';
+import { useLanguage } from '../../contexts/LanguageContext';
 import HealthScoreWidget from './HealthScoreWidget';
 import AlertsWidget from './AlertsWidget';
 import QuickStatsWidget from './QuickStatsWidget';
@@ -13,6 +14,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ entries }) => {
+  const { t, currentLanguage } = useLanguage();
   const [healthScore, setHealthScore] = useState<HealthScore | null>(null);
   const [alerts, setAlerts] = useState<HealthAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +58,7 @@ const Dashboard: React.FC<DashboardProps> = ({ entries }) => {
       <div className="dashboard">
         <div className="dashboard-loading">
           <div className="loading-spinner"></div>
-          <p>健康データを分析中...</p>
+          <p>{t('dashboard.analyzingData')}</p>
         </div>
       </div>
     );
@@ -66,18 +68,18 @@ const Dashboard: React.FC<DashboardProps> = ({ entries }) => {
     return (
       <div className="dashboard">
         <div className="dashboard-header">
-          <h2>🏥 ヘルスダッシュボード</h2>
+          <h2>🏥 {t('dashboard.title')}</h2>
         </div>
         <div className="no-data-dashboard">
           <div className="no-data-icon">📊</div>
-          <h3>データが不足しています</h3>
-          <p>健康スコアを計算するには、もう少し記録が必要です。</p>
+          <h3>{t('dashboard.insufficientData')}</h3>
+          <p>{t('dashboard.needMoreRecords')}</p>
           <div className="data-requirements">
-            <h4>推奨される記録:</h4>
+            <h4>{t('dashboard.recommendedRecords')}:</h4>
             <ul>
-              <li>🍽️ 食事記録（食欲レベルの記録）</li>
-              <li>💊 健康記録（体重・症状の記録）</li>
-              <li>🎾 行動記録（活動レベルの記録）</li>
+              <li>🍽️ {t('dashboard.recommendedFood')}</li>
+              <li>💊 {t('dashboard.recommendedHealth')}</li>
+              <li>🎾 {t('dashboard.recommendedBehavior')}</li>
             </ul>
           </div>
         </div>
@@ -88,9 +90,9 @@ const Dashboard: React.FC<DashboardProps> = ({ entries }) => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2>🏥 ヘルスダッシュボード</h2>
+        <h2>🏥 {t('dashboard.title')}</h2>
         <div className="last-updated">
-          最終更新: {healthScore.lastUpdated.toLocaleString('ja-JP')}
+          {t('dashboard.lastUpdated')}: {healthScore.lastUpdated.toLocaleString(currentLanguage === 'zh' ? 'zh-CN' : currentLanguage === 'ko' ? 'ko-KR' : currentLanguage === 'af' ? 'en-ZA' : currentLanguage === 'en' ? 'en-US' : 'ja-JP')}
         </div>
       </div>
 
