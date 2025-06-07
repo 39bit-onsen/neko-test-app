@@ -12,6 +12,7 @@ import CatComparison from './CatComparison/CatComparison';
 import CatProfileManager from './CatProfile/CatProfileManager';
 import VetSharingPanel from './Social/VetSharingPanel';
 import FamilyManager from './Social/FamilyManager';
+import SocialHub from './Social/SocialHub';
 import NotificationCenter from './PWA/NotificationCenter';
 import ReportGenerator from './Reports/ReportGenerator';
 import Dashboard from './Dashboard/Dashboard';
@@ -30,6 +31,7 @@ type ViewMode =
   | 'cat-profile'
   | 'vet-sharing'
   | 'family-manager'
+  | 'social-hub'
   | 'notifications'
   | 'reminders'
   | 'reports';
@@ -116,10 +118,6 @@ const CatDiary: React.FC = () => {
     setShowVetSharing(true);
   };
 
-  const handleVetSharingClose = () => {
-    setShowVetSharing(false);
-    setSelectedEntry(null);
-  };
 
   // ナビゲーションメニューの定義
   const navigationMenus = [
@@ -148,6 +146,7 @@ const CatDiary: React.FC = () => {
     {
       category: 'ソーシャル・共有',
       items: [
+        { id: 'social-hub' as ViewMode, label: '🤝 ソーシャルハブ', description: '統合ソーシャル機能' },
         { id: 'vet-sharing' as ViewMode, label: '🏥 獣医師連携', description: '獣医師との記録共有' },
         { id: 'family-manager' as ViewMode, label: '👥 家族管理', description: '家族メンバー招待・管理' },
       ]
@@ -203,11 +202,16 @@ const CatDiary: React.FC = () => {
       case 'vet-sharing':
         return (
           <div className="vet-sharing-container">
-            <h3>獣医師連携</h3>
-            <p>記録をクリックして獣医師と共有できます。</p>
+            <div className="vet-sharing-header">
+              <h3>🏥 獣医師連携</h3>
+              <p>記録をクリックして獣医師と共有・相談ができます。</p>
+            </div>
             <EntryList
               entries={entries}
-              onEntryClick={handleEntryClick}
+              onEntryClick={(entry) => {
+                setSelectedEntry(entry);
+                setShowVetSharing(true);
+              }}
               onEntryEdit={setEditingEntry}
               onEntryDelete={setDeletingEntry}
             />
@@ -216,6 +220,9 @@ const CatDiary: React.FC = () => {
       
       case 'family-manager':
         return <FamilyManager />;
+      
+      case 'social-hub':
+        return <SocialHub entries={entries} />;
       
       case 'notifications':
         return (
@@ -343,10 +350,12 @@ const CatDiary: React.FC = () => {
           )}
 
           {showVetSharing && selectedEntry && (
-            <VetSharingPanel
-              entry={selectedEntry}
-              onClose={handleVetSharingClose}
-            />
+            <div className="modal-overlay">
+              <VetSharingPanel
+                entry={selectedEntry}
+                onClose={() => setShowVetSharing(false)}
+              />
+            </div>
           )}
 
           <div className="content-area">
